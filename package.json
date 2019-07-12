@@ -1,0 +1,27 @@
+{
+    "name": "@zhangwj0520/localstorage-expires",
+    "version": "0.0.1",
+    "description": "对localStorage进行了扩展，可以设置超时时间，添加了序列化方法",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "localStorage",
+        "expires"
+    ],
+    "author": "zhangweijie",
+    "license": "ISC",
+    "dependencies": {
+        "moment": "^2.24.0"
+    },
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zhangwj0520/localstorage-expires.git"
+    },
+    "bugs": {
+        "url": "https://github.com/zhangwj0520/localstorage-expires/issues"
+    },
+    "homepage": "https://github.com/zhangwj0520/localstorage-expires#readme"
+}
