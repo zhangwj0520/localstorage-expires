@@ -25,6 +25,11 @@ storage.set('user', { name: 'DaBai', phone: '188012345678'});
 // 设置时间,可以设置Number,多少秒过期,或者String,例如 2020-10-10 10:10:10
 storage.set('user', 'DaBai', 1000);
 
+// 删除
+storage.remove('user');
+storage.remove(['user','city']);
+storage.remove();
+
 // 清除localstorage
 storage.clear();
 ```

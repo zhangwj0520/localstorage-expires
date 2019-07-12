@@ -102,6 +102,7 @@ class cacheStorage {
         });
         this.allData = allData;
     }
+
     /**
      * @description 在localStorage中 存储值
      * @param {String} key key
@@ -121,6 +122,13 @@ class cacheStorage {
             console.error(e);
         }
         return val;
+    }
+
+    /**
+     * @description 返回所有localStorage 的内容
+     */
+    getAll() {
+        return this.allData;
     }
 
     /**
@@ -164,26 +172,33 @@ class cacheStorage {
                 let val = this.get(item);
                 return val ? { ...pre, [item]: val } : pre;
             }, {});
+        } else {
+            throw new Error('参数类型错误!');
         }
-    }
-    /**
-     * @description 返回所有localStorage 的内容
-     */
-    getAll() {
-        return this.allData;
     }
 
     /**
-     *
      * @description 删除localStorage 的key
-     * @param {String} key
+     * @param {*} 	key
+     * *  * ### key 类型
+     *  - String    : 删除单个值
+     *  - Array     : 删除多个
+     *  - Undefined : 删除所有
      */
     remove(key) {
-        key = _checkAndWrapKeyAsString(key);
-        const data = this.source;
-        let value = data[key];
-        delete data[key];
-        return value;
+        let type = Object.prototype.toString.call(key);
+        if (type === '[object String]') {
+            const data = this.source;
+            let value = data[key];
+            delete data[key];
+            return value;
+        } else if (type === '[object Array]') {
+            key.forEach(item => this.remove(item));
+        } else if (type === '[object Undefined]') {
+            this.clear();
+        } else {
+            throw new Error('参数类型错误!');
+        }
     }
 
     clear() {
