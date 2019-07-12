@@ -1,6 +1,6 @@
 {
     "name": "@zhangwj0520/localstorage-expires",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "description": "对localStorage进行了扩展，可以设置超时时间，添加了序列化方法",
     "main": "src/index.js",
     "scripts": {

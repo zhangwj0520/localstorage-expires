@@ -70,6 +70,7 @@ class cacheStorage {
     constructor(props) {
         this.props = props || {};
         this.source = this.props.source || window.localStorage;
+        this.allData = {};
         this.initRun();
     }
     /**
@@ -78,6 +79,7 @@ class cacheStorage {
     initRun() {
         const timeNow = new Date().getTime();
         let data = this.source;
+        let allData = {};
         Object.entries(data).forEach(item => {
             let [key, val] = item;
             let cacheItem = val;
@@ -91,9 +93,14 @@ class cacheStorage {
                 if (timeNow > exp) {
                     console.log(`超时删除 {${key}:${cacheItem.value}}`);
                     this.remove(key);
+                } else {
+                    allData[key] = defaultSerializer.deserialize(cacheItem.value);
                 }
+            } else {
+                allData[key] = val;
             }
         });
+        this.allData = allData;
     }
     /**
      * @description 在localStorage中 存储值
@@ -118,29 +125,52 @@ class cacheStorage {
 
     /**
      * @description
-     * @param {String} 	key 键
+     * @param {*} 	key
+     *
+     * *  * ### key 类型
+     *  - String    : 返回单个值
+     *  - Array     : 返回对象
+     *  - Undefined : 返回所有
      *
      */
     get(key) {
-        const source = this.source;
-        const timeNow = new Date().getTime();
-        let value;
-        key = _checkAndWrapKeyAsString(key);
-        var cacheItem = null;
-        try {
-            cacheItem = defaultSerializer.deserialize(source[key]);
-        } catch (e) {
-            return null;
-        }
-        if (_isCacheItem(cacheItem)) {
-            let exp = new Date(cacheItem.expiresTime).getTime();
-            if (timeNow < exp) {
-                value = defaultSerializer.deserialize(cacheItem.value);
-            } else {
-                this.remove(key);
+        let type = Object.prototype.toString.call(key);
+        if (type === '[object String]') {
+            const source = this.source;
+            const timeNow = new Date().getTime();
+            let value = source[key];
+            key = _checkAndWrapKeyAsString(key);
+            var cacheItem = null;
+            try {
+                cacheItem = defaultSerializer.deserialize(source[key]);
+            } catch (e) {
+                // console.log(e);
             }
+
+            if (_isCacheItem(cacheItem)) {
+                let exp = new Date(cacheItem.expiresTime).getTime();
+                if (timeNow < exp) {
+                    value = defaultSerializer.deserialize(cacheItem.value);
+                } else {
+                    value = null;
+                    this.remove(key);
+                }
+            }
+            return value;
+        } else if (type === '[object Undefined]') {
+            return this.allData;
+        } else if (type === '[object Array]') {
+            return key.reduce((pre, item) => {
+                let val = this.get(item);
+                return val ? { ...pre, [item]: val } : pre;
+            }, {});
         }
-        return value;
+    }
+    /**
+     * @description 返回所有localStorage 的内容
+     */
+    getAll() {
+        return this.allData;
     }
 
     /**
